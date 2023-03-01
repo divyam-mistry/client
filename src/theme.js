@@ -52,6 +52,15 @@ export const themeSettings = (mode) => {
                 default: colorTokens.grey[900],
                 alt: colorTokens.grey[800],
               },
+              text: {
+                primary: colorTokens.grey[0],
+              },
+              common: {
+                white: colorTokens.white,
+              },
+              action: {
+                active: colorTokens.white,
+              }
             }
           : {
               // palette values for light mode
@@ -71,6 +80,15 @@ export const themeSettings = (mode) => {
                 default: colorTokens.grey[10],
                 alt: colorTokens.grey[0],
               },
+              text: {
+                primary: colorTokens.grey[800],
+              },
+              common: {
+                white: colorTokens.white,
+              },
+              action: {
+                active: colorTokens.white,
+              }
             }),
       },
       typography: {
@@ -100,6 +118,14 @@ export const themeSettings = (mode) => {
           fontFamily: ["Rubik", "sans-serif"].join(","),
           fontSize: 14,
         },
+        pxToRem: () => { return 24; }
       },
+      transitions: {
+        duration: {
+          shorter: ''
+        },
+        create: () => {},
+
+      }
     };
   };
