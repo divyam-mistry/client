@@ -74,20 +74,22 @@ const Form = () => {
             }
         });
         const resp = await loggedInUser.json();
+        console.log(resp);
         onSubmitProps.resetForm();
         if(resp){
-            if(resp.status == '201'){ // success
+            if(resp.error) {
+              setSnackbarMessage(resp.error);
+              setOpenSnackbar(true);
+              // alert(resp.error);
+            }
+            else { // success
                 dispatch(setLogin({
                     user: resp.user,
                     token: resp.token,
                 }));
                 navigate('/home');
             }
-            else {
-                setSnackbarMessage(resp.error);
-                setOpenSnackbar(true);
-                // alert(resp.error);
-            }
+            
         }
     };
     const register = async (values, onSubmitProps) => {
@@ -101,17 +103,16 @@ const Form = () => {
             body: formData,
             method: 'POST'
         });
+        console.log(savedUser);
         const resp = await savedUser.json();
+        console.log(resp);
         onSubmitProps.resetForm();
         if(resp){
-            if(resp.status == '201'){ // success
-                setPageType('login');
-            }
-            else {
+            if(resp.error){ // error
               setSnackbarMessage(resp.error);
               setOpenSnackbar(true);
-                // alert(resp.error);
             }
+            else setPageType('login');
         }
     };
 
