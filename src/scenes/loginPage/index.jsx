@@ -1,7 +1,35 @@
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
+import Form from "./Form";
+
 const LoginPage = () => {
-    return <div>
-        <p>loginpage</p>
-    </div>;
-}
+  const theme = useTheme();
+  const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
+
+  return (
+    <Box>
+      <Box
+        width="100%"
+        textAlign="center"
+        p="1rem 6%"
+        backgroundColor={theme.palette.background.alt}
+      >
+        <Typography fontWeight="bold" fontSize="32px" color="primary">
+          Media.Social
+        </Typography>
+      </Box>
+      <Box
+        width={ isNonMobileScreens ? '50%' : '90%'}
+        backgroundColor={theme.palette.background.alt}
+        p='2rem'
+        m='2rem auto'
+        borderRadius='1.5rem'
+      >
+        {/* <Typography fontWeight="500" variant="h5" sx={{ mb: '1.5rem'}}>
+        </Typography> */}
+        <Form />
+      </Box>
+    </Box>
+  );
+};
 
 export default LoginPage;
