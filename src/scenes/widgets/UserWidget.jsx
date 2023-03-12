@@ -1,4 +1,4 @@
-import { Box, Modal, Typography, useTheme, Divider, IconButton, Tooltip } from "@mui/material";
+import { Box, Typography, useTheme, Divider, IconButton, Tooltip, Button } from "@mui/material";
 import {
   ManageAccountsOutlined,
   WorkOutlineOutlined,
@@ -6,11 +6,11 @@ import {
   Edit,
   Twitter,
   LinkedIn,
+  Explore,
 } from "@mui/icons-material";
 import UserImage from "components/UserImage";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import WidgetWrapper from "components/WidgetWrapper";
 import FlexBetween from "components/FlexBetween";
@@ -54,7 +54,8 @@ const UserWidget = ({ userId, picturePath, modalOpen }) => {
   
 
   return (
-    <WidgetWrapper theme={theme}>
+    <Box>
+      <WidgetWrapper theme={theme}>
         <FlexBetween paddingBottom="1rem">
           <FlexBetween
             sx={{ "&:hover": { cursor: "pointer" } }}
@@ -126,6 +127,19 @@ const UserWidget = ({ userId, picturePath, modalOpen }) => {
         </Box>
         
       </WidgetWrapper>
+      <Button fullWidth={true} startIcon={<Explore />} sx={{
+        mt: '1.5rem',
+        padding: '0.75rem',
+        backgroundColor: theme.palette.background.alt,
+        borderRadius: '0.75rem',
+        gap: '1rem'
+      }} onClick={() => {
+        console.log("explore feed clicked");
+        navigate(`/explore`);
+      }}>
+        <Typography> Explore Feed </Typography>
+      </Button>
+    </Box>
   );
 };
 

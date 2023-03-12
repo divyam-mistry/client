@@ -49,7 +49,7 @@ const HomePage = () => {
           ></UserWidget>
         </Box>
       </Box>
-      {/* MODAL FOR IMAGE */}
+      {/* MODAL FOR PROFILE IMAGE */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <Box onClick={handleClose}>
