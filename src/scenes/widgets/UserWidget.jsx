@@ -128,7 +128,7 @@ const UserWidget = ({ userId, picturePath, modalOpen }) => {
         
       </WidgetWrapper>
       <Button fullWidth={true} startIcon={<Explore />} sx={{
-        mt: '1.5rem',
+        m: '1.5rem 0',
         padding: '0.75rem',
         backgroundColor: theme.palette.background.alt,
         borderRadius: '0.75rem',

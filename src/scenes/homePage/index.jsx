@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import { Box, useMediaQuery, Modal, useTheme } from "@mui/material";
 import { useState } from "react";
 import { Close } from "@mui/icons-material";
+import ScrollToTop from "components/ScrollToTop";
+import MyPostWidget from "scenes/widgets/MyPostWidget";
 
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -48,7 +50,14 @@ const HomePage = () => {
             modalOpen={handleOpen}
           ></UserWidget>
         </Box>
+        <Box flexBasis={isNonMobileScreens ? "42%" : undefined}>
+          <MyPostWidget picturePath={picturePath}></MyPostWidget>
+        </Box>
+        <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
+
+        </Box>
       </Box>
+      <ScrollToTop />
       {/* MODAL FOR PROFILE IMAGE */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>

@@ -138,6 +138,7 @@ const Label = styled(Paper)(({ theme, islower = "false" }) => ({
   backgroundColor: theme.palette.background.alt,
   ...theme.typography.body2,
   textAlign: "center",
+  borderRadius: '0.5rem',
   color: theme.palette.text.secondary,
   borderBottomLeftRadius: islower === "true" ? "" : 0,
   borderBottomRightRadius: islower === "true" ? "" : 0,
