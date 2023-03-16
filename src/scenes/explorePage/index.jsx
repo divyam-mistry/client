@@ -21,6 +21,7 @@ import environment from "env.js";
 import FlexBetween from "components/FlexBetween";
 import { useNavigate } from "react-router-dom";
 import ScrollToTop from "components/ScrollToTop";
+import PostWidget from "scenes/widgets/PostWidget";
 
 const ExplorePage = () => {
   const breakpoint1000 = useMediaQuery("(min-width: 1000px)");
@@ -32,6 +33,7 @@ const ExplorePage = () => {
   //   const [postImagePathForModal, setPostImagePathForModal] = useState("");
   //   const handleOpen = () => setOpen(true);
   //   const handleClose = () => setOpen(false);
+  const userId = useSelector((state) => state.user._id);
   const token = useSelector((state) => state.token);
   const theme = useTheme();
   const navigate = useNavigate();
@@ -55,7 +57,12 @@ const ExplorePage = () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await response.json();
-    setPosts(data);
+    // filter posts that belong to loggedIn user.
+    const filterData = data.filter((post) => {
+      return post.userId !== userId;
+    });
+    console.log(filterData);
+    setPosts(filterData);
   };
 
   useEffect(() => {
@@ -77,7 +84,7 @@ const ExplorePage = () => {
         >
           {posts.map((post, index) => (
             <div key={index}>
-              <Label theme={theme}>
+              {/* <Label theme={theme}>
                 <FlexBetween padding="0.5rem">
                   <FlexBetween
                     sx={{ "&:hover": { cursor: "pointer" } }}
@@ -124,7 +131,8 @@ const ExplorePage = () => {
                     {post.description}
                   </Typography>
                 </Box>
-              </Label>
+              </Label> */}
+              <PostWidget post={post}></PostWidget>
             </div>
           ))}
         </Masonry>
