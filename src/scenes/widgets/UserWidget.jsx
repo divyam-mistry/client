@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme, Divider, IconButton, Tooltip, Button } from "@mui/material";
+import { Box, Typography, Modal, InputBase,  useTheme, Divider, IconButton, Tooltip, Button } from "@mui/material";
 import {
   ManageAccountsOutlined,
   WorkOutlineOutlined,
@@ -7,6 +7,9 @@ import {
   Twitter,
   LinkedIn,
   Explore,
+  Close,
+  Search,
+  Speaker,
 } from "@mui/icons-material";
 import UserImage from "components/UserImage";
 import { useSelector } from "react-redux";
@@ -14,9 +17,15 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import WidgetWrapper from "components/WidgetWrapper";
 import FlexBetween from "components/FlexBetween";
+// import useSound from "use-sound";
 
 const UserWidget = ({ userId, picturePath, modalOpen }) => {
   const [user, setUser] = useState(null);
+  const [word, setWord] = useState('');
+  const [wordDefinition, setWordDefinition] = useState({});
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
   // const user = useSelector((state) => state.user);
@@ -51,7 +60,32 @@ const UserWidget = ({ userId, picturePath, modalOpen }) => {
   } = user;
   const fullName = firstName + " " + lastName;
 
-  
+  const getWordDefinitions = async (word) => {
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,{
+      method: 'GET',
+    });
+    const data = await response.json();
+    if(data.title) return data;
+    console.log(data);
+    return data[0];
+  };
+
+  const onWordChange = (event) => {
+    setWord(event.target.value);
+  };
+
+  // style for modal
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    // border: `2px solid #000`,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: '2rem',
+    borderRadius: '1rem'
+  };
 
   return (
     <Box>
@@ -139,6 +173,68 @@ const UserWidget = ({ userId, picturePath, modalOpen }) => {
       }}>
         <Typography> Explore Feed </Typography>
       </Button>
+      <FlexBetween
+            backgroundColor={theme.palette.background.alt}
+            borderRadius="0.75rem"
+            gap="3rem"
+            padding="0.2rem 1.5rem"
+          >
+            <InputBase placeholder="Search..." onChange={onWordChange} />
+            <IconButton onClick={() => getWordDefinitions(word).then((result) => {
+              setWordDefinition(result);
+              handleOpen();
+            }).catch((error) => {
+              console.log('error', error);
+              setWordDefinition(error);
+              handleOpen();
+            })}>
+              <Search />
+            </IconButton>
+      </FlexBetween>
+      {/* MODAL FOR WORD DEFINITION */}
+      <Modal open={open} onClose={handleClose} >
+        <Box sx={style}>
+          <Box onClick={handleClose}>
+            <Close fontSize="large" sx={{
+              top: '1rem', right: '1rem', position: 'absolute', 
+              color: theme.palette.neutral.dark
+            }}></Close>
+          </Box>
+          { wordDefinition.word ? <Box mt='1rem'>
+          <Typography variant='h4' mb='1rem' sx={{
+            textDecoration: 'underline'
+          }}>{wordDefinition.word} </Typography> 
+          <Box display='flex'>
+          {
+            wordDefinition.phonetics.map((pi, index) => {
+              return <Typography key={index}>
+                {pi.text}
+              </Typography>;
+            })
+          }
+          </Box>
+          {
+            wordDefinition.meanings.map((word, index) => {
+              return <Box mb='0.5rem' key={index}>
+                <Typography variant='h5' fontStyle='italic'>{word.partOfSpeech}</Typography>
+                <Typography variant='h5' color={medium} ml='1.5rem'>
+                  {word.definitions[0].definition}
+                </Typography>
+                { word.definitions[0].example && <Typography variant='h5' color={medium} ml='1.5rem'>
+                  <i>Example: </i> "{word.definitions[0].example}"
+                </Typography>
+                }
+              </Box>;
+            })
+          }
+          </Box> : <Box mt='1rem'>
+          <Typography variant='h4'>" {wordDefinition.title} "</Typography>
+          <Typography variant='h5' color={medium} mt='1rem'>
+            {wordDefinition.message + ' ' + wordDefinition.resolution}
+          </Typography>
+          </Box>}
+        </Box>
+      </Modal>
     </Box>
   );
 };
