@@ -3,10 +3,13 @@ import UserWidget from "scenes/widgets/UserWidget";
 import UserImage from "components/UserImage";
 import { useSelector } from "react-redux";
 import { Box, useMediaQuery, Modal, useTheme } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Close } from "@mui/icons-material";
 import ScrollToTop from "components/ScrollToTop";
 import MyPostWidget from "scenes/widgets/MyPostWidget";
+import AdvertWidget from "scenes/widgets/AdvertWidget";
+import PostWidget from "scenes/widgets/PostWidget";
+import environment from "env";
 
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -14,9 +17,24 @@ const HomePage = () => {
   const breakpoint600 = useMediaQuery("(min-width: 600px)");
   const breakpoint375 = useMediaQuery("(min-width: 375px)");  
   const { _id, picturePath } = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
   const [open, setOpen] = useState(false);
+  const [posts, setPosts] = useState([]);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const getAllPosts = async () => {
+    const response = await fetch(environment.backendUrl + "/posts/", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await response.json();
+    setPosts(data);
+  };
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
 
   const theme = useTheme();
 
@@ -51,10 +69,15 @@ const HomePage = () => {
           ></UserWidget>
         </Box>
         <Box flexBasis={isNonMobileScreens ? "42%" : undefined}>
-          <MyPostWidget picturePath={picturePath}></MyPostWidget>
+          <MyPostWidget picturePath={picturePath} updatePosts={setPosts}></MyPostWidget>
+          {posts.map((post, index) => (
+            <div key={index}>
+              <PostWidget post={post}></PostWidget>
+            </div>
+          ))}
         </Box>
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-
+          <AdvertWidget />
         </Box>
       </Box>
       <ScrollToTop />

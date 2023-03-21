@@ -179,7 +179,7 @@ const UserWidget = ({ userId, picturePath, modalOpen }) => {
             gap="3rem"
             padding="0.2rem 1.5rem"
           >
-            <InputBase placeholder="Search..." onChange={onWordChange} />
+            <InputBase placeholder="Get Word Definitions..." onChange={onWordChange} />
             <IconButton onClick={() => getWordDefinitions(word).then((result) => {
               setWordDefinition(result);
               handleOpen();

@@ -41,7 +41,7 @@ import {
     };
   
     return (
-      <WidgetWrapper mt="0.5rem">
+      <WidgetWrapper m="1rem 0">
         <Friend
           friendId={post.userId}
           name={name}

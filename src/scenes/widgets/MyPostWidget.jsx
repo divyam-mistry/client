@@ -25,7 +25,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 
-const MyPostWidget = ({ picturePath }) => {
+const MyPostWidget = ({ picturePath, updatePosts }) => {
   const dispatch = useDispatch();
   const [isImage, setIsImage] = useState(false);
   const [image, setImage] = useState(null);
@@ -53,12 +53,13 @@ const MyPostWidget = ({ picturePath }) => {
     });
     const posts = await response.json();
     dispatch(setPosts({ posts }));
+    updatePosts(posts);
     setImage(null);
     setPostDescription("");
   };
 
   return (
-    <Box>
+    <Box mb='1rem'>
       <WidgetWrapper>
         <FlexBetween gap='1.5rem'>
             <UserImage image={picturePath} size="50px"></UserImage>
@@ -160,11 +161,11 @@ const MyPostWidget = ({ picturePath }) => {
           )}
 
           <Button 
-            disabled={!postDescription}
+            disabled={!(postDescription && image)}
             onClick={handlePost}
             sx={{
               color: palette.background.alt,
-              backgroundColor: postDescription ? palette.primary.main : null,
+              backgroundColor: (postDescription && image) ? palette.primary.main : null,
               borderRadius: "3rem",
             }}
           >
