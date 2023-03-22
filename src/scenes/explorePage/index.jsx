@@ -80,7 +80,7 @@ const ExplorePage = () => {
       >
         <Masonry
           columns={breakpoint600 ? (breakpoint1000 ? 3 : 2) : 1}
-          spacing={2}
+          spacing={3}
         >
           {posts.map((post, index) => (
             <div key={index}>

@@ -81,7 +81,7 @@ const Navbar = () => {
               ? <LightMode sx={{fontSize: '25px'}}/> 
               : <DarkMode sx={{fontSize: '25px'}}/>}
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => navigate('/chat')}>
               <Message sx={{fontSize: '25px'}}/>
             </IconButton>
             <IconButton>

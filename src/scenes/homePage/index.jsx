@@ -10,6 +10,7 @@ import MyPostWidget from "scenes/widgets/MyPostWidget";
 import AdvertWidget from "scenes/widgets/AdvertWidget";
 import PostWidget from "scenes/widgets/PostWidget";
 import environment from "env";
+import FriendsList from "scenes/widgets/FriendsList";
 
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -29,7 +30,15 @@ const HomePage = () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await response.json();
-    setPosts(data);
+    const resp = await fetch(`${environment.backendUrl}/users/${_id}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const user = await resp.json();
+    const filteredPosts = data.filter((post) => {
+      return (post.userId === _id) || user.friends.includes(post.userId);
+    });
+    setPosts(filteredPosts);
   };
 
   useEffect(() => {
@@ -78,6 +87,7 @@ const HomePage = () => {
         </Box>
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
           <AdvertWidget />
+          <FriendsList />
         </Box>
       </Box>
       <ScrollToTop />
