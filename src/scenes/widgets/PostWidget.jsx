@@ -12,7 +12,7 @@ import {
   import { useDispatch, useSelector } from "react-redux";
   import { setPost } from "state";
   
-  const PostWidget = ({post}) => {
+  const PostWidget = ({post, isExploreFeed}) => {
     const likes = post.likes;
     const comments = post.comments;
     const name = post.firstName + ' ' + post.lastName;
@@ -41,7 +41,7 @@ import {
     };
   
     return (
-      <WidgetWrapper m="1rem 0">
+      <WidgetWrapper m={isExploreFeed ? '0' : '1rem 0'}>
         <Friend
           friendId={post.userId}
           name={name}

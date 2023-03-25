@@ -132,7 +132,7 @@ const ExplorePage = () => {
                   </Typography>
                 </Box>
               </Label> */}
-              <PostWidget post={post}></PostWidget>
+              <PostWidget post={post} isExploreFeed={true}></PostWidget>
             </div>
           ))}
         </Masonry>
