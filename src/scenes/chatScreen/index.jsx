@@ -2,6 +2,7 @@ import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
 import Navbar from "scenes/navbar";
 import UserWidget from "scenes/widgets/UserWidget";
+import { hexToRgb } from "@mui/material";
 import UserImage from "components/UserImage";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -12,13 +13,17 @@ import {
   InputBase,
   useTheme,
   Typography,
+  Modal
 } from "@mui/material";
-import { Search, ArrowBackIos, MoreVert, Forum } from "@mui/icons-material";
+import { Search, ArrowBackIos, MoreVert, Forum, EmojiEmotions, SendOutlined, EmojiEmotionsOutlined} from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setFriends } from "state";
 import environment from "env";
 import Friend from "components/Friend";
+import EmojiPicker from "emoji-picker-react";
+import './index.css';
+import { useRef } from "react";
 
 const ChatScreen = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -57,6 +62,7 @@ const ChatScreen = () => {
       p="2rem"
       gap="0.5rem"
       backgroundColor={theme.palette.background.alt}
+      overflow='clip'
     >
       <Box
         p="1rem"
@@ -91,7 +97,13 @@ const ChatScreen = () => {
             justifyContent: (activeFriend.id) ? "flex-start" : "center",
           }}
         >
-          {(activeFriend.id) ? <ChatHeader friend={activeFriend} /> : <InitialChatScreen />}
+          {(activeFriend.id) 
+          ? <Box>
+            <ChatHeader friend={activeFriend} />
+            <ChatArea />
+            <ChatFooter friend={activeFriend} />
+          </Box> 
+          : <InitialChatScreen />}
         </Box>
       </Box>
     </Box>
@@ -171,7 +183,7 @@ const ChatHeader = ({ friend }) => {
   const main = palette.neutral.main;
   return (
     <Box
-      p="1rem"
+      p="1rem 2rem"
       sx={{
         display: "flex",
         flexDirection: "row",
@@ -196,13 +208,116 @@ const ChatHeader = ({ friend }) => {
   );
 };
 
+const ChatArea = () => {
+  const theme = useTheme();
+  const chatEndRef = useRef(null);
+
+  useEffect(() => {
+    chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  return <Box className='chatArea' sx={{
+    height:'470px',
+    overflowX: 'hidden',
+    overflowY: 'scroll',
+    backgroundColor: theme.palette.neutral.light,
+    }}>
+    <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
+  <div ref={chatEndRef}></div>
+  </Box>;
+}
+
+const ChatFooter = ({ friend }) => {
+  const { palette } = useTheme();
+  const [ emojiPickerActive, setEmojiPickerActive] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  const dark = palette.neutral.dark;
+  const main = palette.neutral.main;
+  return (
+    <Box
+      p="1rem 2rem"
+      mb='0.5rem'
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+      }}
+    >
+      <FlexBetween gap="1rem">
+        <IconButton onClick={() => {setEmojiPickerActive(true)}}>
+          <EmojiEmotionsOutlined fontSize="medium" />
+        </IconButton>
+        <Modal open={emojiPickerActive} onClose={() => setEmojiPickerActive(false)}>
+          <Box sx={{
+            width: 'auto',
+            left: '60px',
+            position: "relative",
+            top: "220px"}}
+          >
+            <EmojiPicker onEmojiClick={(emojiData) => {
+              setChatMessage(chatMessage + emojiData.emoji);
+            }}/>
+          </Box>
+        </Modal>
+        <Box sx={{
+            backgroundColor: palette.neutral.light,
+            borderRadius: "1.5rem",
+            height: '50px',
+            width: '800px',
+            padding: "0.2rem 1.5rem",
+            display: 'flex',
+            alignItems: 'center'
+        }}>
+            <InputBase 
+              placeholder="Type a message..." 
+              value={chatMessage}
+              fullWidth={true}
+              onChange={(e) => setChatMessage(e.target.value)}
+            />
+        </Box>
+      </FlexBetween>
+      <Button
+        endIcon={<SendOutlined />}
+        onClick={() => {
+          setChatMessage('');
+        }}
+      >
+        <Typography variant="h5">Send</Typography>
+      </Button>
+    </Box>
+  );
+};
+
 const InitialChatScreen = () => {
     const { palette } = useTheme();
     const dark = palette.neutral.dark;
     const main = palette.neutral.main;
     const medium = palette.neutral.medium;
     return <Box alignItems='center' display='flex' flexDirection="column" justifyContent='center'>
-      <Forum fontSize='large' color={medium}/>
+      <Forum color={medium} sx={{
+        fontSize: '5rem'
+      }}/>
       <Typography mt='0.5rem' color={medium} fontSize="0.9rem">
         Please tap on a friend to chat with them.
       </Typography>
@@ -210,3 +325,14 @@ const InitialChatScreen = () => {
 };
 
 export default ChatScreen;
+
+
+// {emojiPickerActive && <Box sx={{
+//   "& .MuiBox-root css-1pfiqnk" : {
+//     left: '-250px',
+//     position: "relative",
+//     bottom: '480px',
+//   }
+// }}>
+//     <EmojiPicker />
+//   </Box>}
