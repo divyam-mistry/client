@@ -32,15 +32,30 @@ const ChatScreen = () => {
     name: "",
     picturePath: "",
   });
-  const { _id, friends } = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const [messages, setMessages] = useState([
+    { text: "Hey, how's it going?", sender: "John" },
+    { text: "Not bad, thanks for asking. How about you?", sender: "6404d383c747bf43f925b5bb" },
+    { text: "I'm doing pretty well, thanks. What have you been up to?", sender: "John" },
+    { text: "Not much, just working on some projects. How about you?", sender: "6404d383c747bf43f925b5bb" },
+    { text: "Same here, trying to finish up a project before the deadline.", sender: "John" },
+    { text: "Good luck with that! What's the project about?", sender: "6404d383c747bf43f925b5bb" },
+    { text: "It's a chat application, actually. How ironic, right?", sender: "John" },
+    { text: "Haha, yeah. Well, let me know if you need any help with it.", sender: "6404d383c747bf43f925b5bb" }
+  ]);
+
+  const handleSendMessage = (message) => {
+    setMessages([...messages, { text: message, sender: user._id, datetime: Date.now() }]);
+  };
+
   const getFriends = async () => {
     const response = await fetch(
-      `${environment.backendUrl}/users/${_id}/friends`,
+      `${environment.backendUrl}/users/${user._id}/friends`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
@@ -82,7 +97,7 @@ const ChatScreen = () => {
             <Typography variant="h5">Back to Home</Typography>
           </Button>
           <FriendsPanelLeft
-            friends={friends}
+            friends={user.friends}
             activeFriend={activeFriend}
             setActiveFriend={setActiveFriend}
           />
@@ -100,8 +115,8 @@ const ChatScreen = () => {
           {(activeFriend.id) 
           ? <Box>
             <ChatHeader friend={activeFriend} />
-            <ChatArea />
-            <ChatFooter friend={activeFriend} />
+            <ChatArea currentUser={user} messages={messages}/>
+            <ChatFooter user={user} setMessages={handleSendMessage} />
           </Box> 
           : <InitialChatScreen />}
         </Box>
@@ -208,47 +223,49 @@ const ChatHeader = ({ friend }) => {
   );
 };
 
-const ChatArea = () => {
+const ChatArea = ({ currentUser, messages }) => {
   const theme = useTheme();
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-  }, []);
-
+  }, [messages]);
   return <Box className='chatArea' sx={{
     height:'470px',
     overflowX: 'hidden',
     overflowY: 'scroll',
+    padding: '0.5rem 0',
     backgroundColor: theme.palette.neutral.light,
     }}>
-    <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-<p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum </p>
-  <div ref={chatEndRef}></div>
+      {messages.map((message, index) => (
+        <div
+          key={index}
+          style={{
+            display: 'flex',
+            justifyContent:
+              message.sender === currentUser._id ? 'flex-end' : 'flex-start',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor:
+                message.sender === currentUser._id ? '#008080' : '#2196F3',
+              padding: '10px',
+              borderRadius: '10px',
+              margin: '5px 10px',
+              maxWidth: '60%',
+            }}
+          >
+            {message.text}
+            {/* {message.datetime && <p>{message.datetime}</p>} */}
+          </div>
+        </div>
+      ))}  
+    <div ref={chatEndRef} mt='1rem'></div>
   </Box>;
 }
 
-const ChatFooter = ({ friend }) => {
+const ChatFooter = ({ user, setMessages }) => {
   const { palette } = useTheme();
   const [ emojiPickerActive, setEmojiPickerActive] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -300,6 +317,7 @@ const ChatFooter = ({ friend }) => {
       <Button
         endIcon={<SendOutlined />}
         onClick={() => {
+          setMessages(chatMessage);
           setChatMessage('');
         }}
       >
