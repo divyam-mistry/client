@@ -9,7 +9,7 @@ import {
   FormControl,
   useTheme,
   useMediaQuery,
-  Icon,
+  Popover,
 } from "@mui/material";
 import {
   Search,
@@ -21,25 +21,48 @@ import {
   Menu,
   Close,
   ExitToApp,
+  MovingOutlined,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
+import environment from "env";
+import UserImage from "components/UserImage";
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
+  const [userList, setUserList] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user);
+  const {user, token} = useSelector((state) => state);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
 
   const theme = useTheme();
   const neutralLight = theme.palette.neutral.light;
   const dark = theme.palette.neutral.dark;
   const background = theme.palette.background.default;
+  const main = theme.palette.neutral.main;
+  const medium = theme.palette.neutral.medium;
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const searchUsers = async (event) => {
+    const query = event.target.value;
+    const resp = await fetch(`${environment.backendUrl}/users/search?query=${query}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const users = await resp.json();
+    setUserList(users);
+    console.log(users);
+    setAnchorEl(event.target);
+  }
 
   // const fullName = 'Divyam Mistry';
   const fullName = `${user.firstName} ${user.lastName}`;
@@ -66,10 +89,57 @@ const Navbar = () => {
             gap="3rem"
             padding="0.2rem 1.5rem"
           >
-            <InputBase placeholder="Search..." />
+            <InputBase placeholder="Search..." onChange={(e) => {
+              searchUsers(e);
+            }}/>
             <IconButton>
               <Search />
             </IconButton>
+            <Popover
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              sx={{mt: '1.5rem', ml: '-1.5rem', maxWidth: true}}
+            >
+              {userList.map((result, index) => (
+                <Box onClick={() => {
+                  navigate(`/profile/${result._id}`);
+                  navigate(0);
+                }} key={index} m='0.5rem 0'>
+                  <FlexBetween m='0.75rem 0' p='0 1rem' gap='3.5rem'>
+                    <FlexBetween gap="1rem" sx={{
+                      "&:hover": {
+                        color: theme.palette.primary.light,
+                      },
+                    }}>
+                      <UserImage image={result.picturePath} size="40px" />
+                      <Box>
+                        <Typography
+                          color={main}
+                          variant="h5"
+                          fontWeight="500"
+                        >
+                          {result.fullName}
+                        </Typography>
+                        <Typography color={medium} fontSize="0.75rem">
+                          {result.location}
+                        </Typography>
+                      </Box>
+                    </FlexBetween>
+                    <MovingOutlined />
+                  </FlexBetween>
+                </Box>
+              ))}
+          </Popover>
+
           </FlexBetween>
         )}
       </FlexBetween>
