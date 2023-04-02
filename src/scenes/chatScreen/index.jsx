@@ -13,7 +13,8 @@ import {
   InputBase,
   useTheme,
   Typography,
-  Modal
+  Modal,
+  Divider
 } from "@mui/material";
 import { Search, ArrowBackIos, MoreVert, Forum, EmojiEmotions, SendOutlined, EmojiEmotionsOutlined} from "@mui/icons-material";
 import { useState, useEffect } from "react";
@@ -237,6 +238,7 @@ const ChatArea = ({ currentUser, messages }) => {
     padding: '0.5rem 0',
     backgroundColor: theme.palette.neutral.light,
     }}>
+      <Divider>Today</Divider>
       {messages.map((message, index) => (
         <div
           key={index}
@@ -285,14 +287,17 @@ const ChatFooter = ({ user, setMessages }) => {
         <IconButton onClick={() => {setEmojiPickerActive(true)}}>
           <EmojiEmotionsOutlined fontSize="medium" />
         </IconButton>
-        <Modal open={emojiPickerActive} onClose={() => setEmojiPickerActive(false)}>
+        <Modal disableEnforceFocus={true} open={emojiPickerActive} onClose={() => setEmojiPickerActive(false)}>
           <Box sx={{
             width: 'auto',
             left: '60px',
             position: "relative",
             top: "220px"}}
           >
-            <EmojiPicker onEmojiClick={(emojiData) => {
+            <EmojiPicker 
+              theme='dark'
+              autoFocusSearch={true} 
+              skinTonesDisabled={true} onEmojiClick={(emojiData) => {
               setChatMessage(chatMessage + emojiData.emoji);
             }}/>
           </Box>
@@ -317,7 +322,7 @@ const ChatFooter = ({ user, setMessages }) => {
       <Button
         endIcon={<SendOutlined />}
         onClick={() => {
-          setMessages(chatMessage);
+          if(chatMessage) setMessages(chatMessage);
           setChatMessage('');
         }}
       >
