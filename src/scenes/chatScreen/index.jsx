@@ -16,7 +16,7 @@ import {
   Modal,
   Divider
 } from "@mui/material";
-import { Search, ArrowBackIos, MoreVert, Forum, EmojiEmotions, SendOutlined, EmojiEmotionsOutlined} from "@mui/icons-material";
+import { Search, ArrowBackIos, MoreVert, Forum, ImageOutlined, SendOutlined, EmojiEmotionsOutlined} from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setFriends } from "state";
@@ -25,6 +25,7 @@ import Friend from "components/Friend";
 import EmojiPicker from "emoji-picker-react";
 import './index.css';
 import { useRef } from "react";
+import moment from "moment/moment";
 
 const ChatScreen = () => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
@@ -177,13 +178,13 @@ const FriendsPanelLeft = ({ friends, activeFriend, setActiveFriend }) => {
                   <Typography color={main} variant="h5" fontWeight="500">
                     {name}
                   </Typography>
-                  <Typography color={main} fontSize="0.75rem">
+                  <Typography color={medium} fontSize="0.75rem">
                     last text from this user
                   </Typography>
                 </Box>
               </FlexBetween>
-              <Typography color={main} fontSize="0.75rem">
-                22:32
+              <Typography color={medium} fontSize="0.75rem">
+                {moment().format('hh:mm')}
               </Typography>
             </FlexBetween>
           </Box>
@@ -226,6 +227,7 @@ const ChatHeader = ({ friend }) => {
 
 const ChatArea = ({ currentUser, messages }) => {
   const theme = useTheme();
+  const medium = theme.palette.neutral.medium;
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -256,10 +258,19 @@ const ChatArea = ({ currentUser, messages }) => {
               borderRadius: '10px',
               margin: '5px 10px',
               maxWidth: '60%',
+              wordWrap: 'break-word'
             }}
           >
-            {message.text}
-            {/* {message.datetime && <p>{message.datetime}</p>} */}
+            <Typography>
+              {message.text}
+            </Typography>
+            <Typography fontSize='12px' sx={{
+              // alignItems: 'end',
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}>
+              {moment().format('hh:mm')}
+            </Typography>
           </div>
         </div>
       ))}  
@@ -270,6 +281,7 @@ const ChatArea = ({ currentUser, messages }) => {
 const ChatFooter = ({ user, setMessages }) => {
   const { palette } = useTheme();
   const [ emojiPickerActive, setEmojiPickerActive] = useState(false);
+  const [ imagePickerActive, setImagePickerActive] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const dark = palette.neutral.dark;
   const main = palette.neutral.main;
@@ -302,11 +314,25 @@ const ChatFooter = ({ user, setMessages }) => {
             }}/>
           </Box>
         </Modal>
+        <IconButton onClick={() => {setImagePickerActive(true)}}>
+          <ImageOutlined fontSize="medium" />
+        </IconButton>
+        <Modal disableEnforceFocus={true} open={imagePickerActive} onClose={() => setImagePickerActive(false)}>
+          <Box sx={{
+            width: 'auto',
+            left: '60px',
+            position: "relative",
+            top: "220px"}}
+          >
+            
+          </Box>
+        </Modal>
         <Box sx={{
             backgroundColor: palette.neutral.light,
             borderRadius: "1.5rem",
             height: '50px',
-            width: '800px',
+            margin: '0 1rem',
+            width: '780px',
             padding: "0.2rem 1.5rem",
             display: 'flex',
             alignItems: 'center'
@@ -315,6 +341,9 @@ const ChatFooter = ({ user, setMessages }) => {
               placeholder="Type a message..." 
               value={chatMessage}
               fullWidth={true}
+              multiline={true}
+              maxRows={2}
+              minRows={1}
               onChange={(e) => setChatMessage(e.target.value)}
             />
         </Box>
