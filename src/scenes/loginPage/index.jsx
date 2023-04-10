@@ -1,5 +1,6 @@
 import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import Form from "./Form";
+import environment from "env";
 
 const LoginPage = () => {
   const theme = useTheme();
@@ -12,9 +13,20 @@ const LoginPage = () => {
         textAlign="center"
         p="1rem 6%"
         backgroundColor={theme.palette.background.alt}
+        display='flex'
+        justifyContent='center'
+        gap='0.5rem'
       >
+        <img
+          src='../assets/logo-rmbg.png'
+          alt='PixelChat'
+          style={{
+            height: '50px',
+            width: "50px",
+          }}
+        />
         <Typography fontWeight="bold" fontSize="32px" color="primary">
-          Media.Social
+          PixelChat
         </Typography>
       </Box>
       <Box
