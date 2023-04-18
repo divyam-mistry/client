@@ -1,11 +1,10 @@
 import {
   EditOutlined,
   DeleteOutlined,
-  AttachFileOutlined,
-  GifBoxOutlined,
+  AutoFixHigh,
   ImageOutlined,
-  MicOutlined,
-  MoreHorizOutlined,
+  Close,
+  Add
 } from "@mui/icons-material";
 import {
   Box,
@@ -14,13 +13,17 @@ import {
   InputBase,
   useTheme,
   Button,
+  Modal,
   IconButton,
   useMediaQuery,
+  Chip,
+  Paper
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Dropzone from "react-dropzone";
 import UserImage from "components/UserImage";
 import WidgetWrapper from "components/WidgetWrapper";
+import { styled } from '@mui/system';
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
@@ -36,6 +39,39 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const mediumMain = palette.neutral.mediumMain;
   const medium = palette.neutral.medium;
+
+  const ListItem = styled('li')({
+    margin: '0.5rem'
+  });
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    // border: `2px solid #000`,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '1rem'
+  };
+  const [chipData, setChipData] = useState([{key: 0, label: 'puns'}]);
+  const [keyword, setKeyword] = useState('');
+
+  const handleDelete = (chipToDelete) => () => {
+    setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
+  };
+  const addKeyword = () => {
+    // setChipData([...chipData, newObj]);
+    chipData.push({
+      key: chipData.length,
+      label: keyword
+    });
+    setKeyword('');
+  }
 
   const handlePost = async () => {
     const formData = new FormData();
@@ -127,38 +163,26 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
 
         <Divider sx={{m: '1rem 0'}}/>
         <FlexBetween>
-          <FlexBetween gap="0.25rem" onClick={() => setIsImage(!isImage)}>
-            <ImageOutlined sx={{ color: mediumMain }} />
-            <Typography
-              color={mediumMain}
-              sx={{ "&:hover": { cursor: "pointer", color: medium } }}
-            >
-              Image
-            </Typography>
-          </FlexBetween>
-
-          {isNonMobileScreens ? (
-            <>
-              <FlexBetween gap="0.25rem">
-                <GifBoxOutlined sx={{ color: mediumMain }} />
-                <Typography color={mediumMain}>Clip</Typography>
-              </FlexBetween>
-
-              <FlexBetween gap="0.25rem">
-                <AttachFileOutlined sx={{ color: mediumMain }} />
-                <Typography color={mediumMain}>Attachment</Typography>
-              </FlexBetween>
-
-              <FlexBetween gap="0.25rem">
-                <MicOutlined sx={{ color: mediumMain }} />
-                <Typography color={mediumMain}>Audio</Typography>
-              </FlexBetween>
-            </>
-          ) : (
-            <FlexBetween gap="0.25rem">
-              <MoreHorizOutlined sx={{ color: mediumMain }} />
+          <FlexBetween gap='1rem'>
+            <FlexBetween gap="0.25rem" onClick={() => setIsImage(!isImage)}>
+              <ImageOutlined sx={{ color: mediumMain }} />
+              <Typography
+                color={mediumMain}
+                sx={{ "&:hover": { cursor: "pointer", color: medium } }}
+              >
+                Image
+              </Typography>
             </FlexBetween>
-          )}
+            
+            <FlexBetween gap="0.25rem" onClick={handleOpen}>
+              <AutoFixHigh sx={{ color: mediumMain }} />
+              <Typography color={mediumMain}
+                sx={{ "&:hover": { cursor: "pointer", color: medium } }}
+              >
+                Caption
+              </Typography>
+            </FlexBetween>
+          </FlexBetween>
 
           <Button 
             disabled={!(postDescription && image)}
@@ -174,6 +198,56 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
 
         </FlexBetween>
       </WidgetWrapper>
+      
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={style}>
+          <Box onClick={handleClose}>
+              <Close fontSize="large" sx={{
+                top: '5%', right: '5%', position: 'absolute', 
+                color: palette.neutral.dark
+              }}></Close>
+          </Box>
+          <Typography mt='1rem' variant='h3' color={mediumMain}>PixelChat Caption Generator</Typography>
+          <Box>
+            <FlexBetween
+              backgroundColor={palette.neutral.light}
+              borderRadius="5px"
+              padding="0.2rem 0 0.2rem 0.5rem"
+              mt="1rem"
+            >
+              <InputBase 
+                placeholder="Enter keywords..." 
+                onChange={(event) => setKeyword(event.target.value)}
+                value={keyword}
+              />
+              <Button disabled={(!keyword || chipData.length >= 3 )} onClick={addKeyword}>Add</Button>
+            </FlexBetween>
+          </Box>
+          {<Paper
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              listStyle: 'none',
+              p: 0.5,
+              mt: '0.5rem',
+            }}
+            component="ul"
+          >
+            {chipData.map((data) => {
+              return (
+                <ListItem key={data.key}>
+                  <Chip
+                    label={data.label}
+                    onDelete={handleDelete(data)}
+                  />
+                </ListItem>
+              );
+            })}
+          </Paper>}
+        </Box>
+      </Modal>
+
     </Box>
   );
 };
