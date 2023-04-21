@@ -17,7 +17,8 @@ import {
   IconButton,
   useMediaQuery,
   Chip,
-  Paper
+  Paper,
+  Skeleton
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Dropzone from "react-dropzone";
@@ -27,6 +28,7 @@ import { styled } from '@mui/system';
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
+import environment from "env";
 
 const MyPostWidget = ({ picturePath, updatePosts }) => {
   const dispatch = useDispatch();
@@ -46,7 +48,11 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setChipData([]);
+    setCaptionData([]);
+  }
   const style = {
     position: "absolute",
     top: "50%",
@@ -58,7 +64,8 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
     p: 4,
     borderRadius: '1rem'
   };
-  const [chipData, setChipData] = useState([{key: 0, label: 'puns'}]);
+  const [chipData, setChipData] = useState([]);
+  const [captionData, setCaptionData] = useState([]);
   const [keyword, setKeyword] = useState('');
 
   const handleDelete = (chipToDelete) => () => {
@@ -92,6 +99,21 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
     updatePosts(posts);
     setImage(null);
     setPostDescription("");
+  };
+
+  const generateCaptions = async () => {
+    console.log(chipData);
+    const response = await fetch(`${environment.backendUrl}/helpers/captions/generate`, {
+      method: "POST",
+      headers: { 
+        Authorization: `Bearer ${token}`, 
+        'Content-Type': 'application/json' 
+      },
+      body: JSON.stringify(chipData),
+    });
+    const resp = await response.json();
+    console.log(resp);
+    setCaptionData(resp.captions);
   };
 
   return (
@@ -223,7 +245,7 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
               <Button disabled={(!keyword || chipData.length >= 3 )} onClick={addKeyword}>Add</Button>
             </FlexBetween>
           </Box>
-          {<Paper
+          {(chipData.length > 0) && <Paper
             sx={{
               display: 'flex',
               justifyContent: 'center',
@@ -245,6 +267,27 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
               );
             })}
           </Paper>}
+          {(chipData.length > 0) && <Button fullWidth={true} sx={{
+            padding: '0.75rem',
+            backgroundColor: palette.primary.light,
+            borderRadius: '0.75rem',
+            gap: '1rem'
+          }} onClick={generateCaptions}>
+            <Typography> Generate</Typography>
+          </Button>}
+          {captionData 
+            ? <Box>
+              {captionData.map((c, index) => {
+                return <Typography>{c.caption}</Typography>
+              })}
+            </Box> 
+            : <Box>
+              <Skeleton />
+              <Skeleton /> 
+              <Skeleton /> 
+              <Skeleton /> 
+              <Skeleton />
+            </Box>}
         </Box>
       </Modal>
 
