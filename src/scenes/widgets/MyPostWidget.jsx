@@ -4,7 +4,8 @@ import {
   AutoFixHigh,
   ImageOutlined,
   Close,
-  Add
+  Add,
+  ContentCopy
 } from "@mui/icons-material";
 import {
   Box,
@@ -50,6 +51,7 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
+    setGenerate(false);
     setChipData([]);
     setCaptionData([]);
   }
@@ -65,6 +67,7 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
     borderRadius: '1rem'
   };
   const [chipData, setChipData] = useState([]);
+  const [generate, setGenerate] = useState(false);
   const [captionData, setCaptionData] = useState([]);
   const [keyword, setKeyword] = useState('');
 
@@ -126,11 +129,15 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
                 borderRadius: "1.5rem",
                 height: '50px',
                 width: '100%',
-                padding: "0.2rem 1.5rem",
+                padding: "0.2rem 1.2rem",
                 display: 'flex',
                 alignItems: 'center'
             }}>
                 <InputBase 
+                  fullWidth={true}
+                  multiline={true}
+                  maxRows={2}
+                  minRows={1}
                   placeholder="What's on your mind?" 
                   value={postDescription} 
                   onChange={(e) => setPostDescription(e.target.value)}
@@ -272,22 +279,34 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
             backgroundColor: palette.primary.light,
             borderRadius: '0.75rem',
             gap: '1rem'
-          }} onClick={generateCaptions}>
-            <Typography> Generate</Typography>
+          }} onClick={() => {
+            setGenerate(true);
+            generateCaptions();
+          }}>
+            <Typography>Generate</Typography>
           </Button>}
-          {captionData 
-            ? <Box>
+          {generate && <Box>
+            {(captionData.length > 0)
+            ? <Box mt='1rem'>
               {captionData.map((c, index) => {
-                return <Typography>{c.caption}</Typography>
+                return <Box gap='0.25rem' display='flex' justifyContent='start' alignItems='center'>
+                  <IconButton onClick={() => {
+                    navigator.clipboard.writeText(c);
+                  }}>
+                    <ContentCopy color={mediumMain} id={`icon${index}`} ></ContentCopy>
+                  </IconButton>
+                  <Typography color={mediumMain} id={`typo${index}`} variant='h6'>{c}</Typography>
+                </Box>
               })}
             </Box> 
-            : <Box>
+            : <Box mt='1rem'>
               <Skeleton />
               <Skeleton /> 
               <Skeleton /> 
               <Skeleton /> 
               <Skeleton />
             </Box>}
+          </Box>} 
         </Box>
       </Modal>
 

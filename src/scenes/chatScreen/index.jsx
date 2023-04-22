@@ -1,8 +1,4 @@
 import FlexBetween from "components/FlexBetween";
-import WidgetWrapper from "components/WidgetWrapper";
-import Navbar from "scenes/navbar";
-import UserWidget from "scenes/widgets/UserWidget";
-import { hexToRgb } from "@mui/material";
 import UserImage from "components/UserImage";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -14,14 +10,14 @@ import {
   useTheme,
   Typography,
   Modal,
-  Divider
+  Divider,
+  Popover
 } from "@mui/material";
-import { Search, ArrowBackIos, MoreVert, Forum, ImageOutlined, SendOutlined, EmojiEmotionsOutlined} from "@mui/icons-material";
+import { Search, ArrowBackIos, MoreVert, Forum, ImageOutlined, SendOutlined, EmojiEmotionsOutlined, ContentCopy, Reply} from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setFriends } from "state";
 import environment from "env";
-import Friend from "components/Friend";
 import EmojiPicker from "emoji-picker-react";
 import './index.css';
 import { useRef } from "react";
@@ -230,6 +226,19 @@ const ChatArea = ({ currentUser, messages }) => {
   const medium = theme.palette.neutral.medium;
   const chatEndRef = useRef(null);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [msg, setMsg] = useState('');
+  const open = Boolean(anchorEl);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  function handleContextMenu(event, msg) {
+    event.preventDefault();
+    setMsg(msg);
+    setAnchorEl(event.target);
+  }
+
   useEffect(() => {
     chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -260,6 +269,9 @@ const ChatArea = ({ currentUser, messages }) => {
               maxWidth: '60%',
               wordWrap: 'break-word'
             }}
+            onContextMenu={(event) => {
+              handleContextMenu(event, message.text);
+            }}
           >
             <Typography>
               {message.text}
@@ -272,9 +284,56 @@ const ChatArea = ({ currentUser, messages }) => {
               {moment().format('hh:mm')}
             </Typography>
           </div>
+          <Popover
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              sx={{mt: '1.5rem', ml: '-1.5rem', maxWidth: true, boxShadow: 'none'}}>
+              <Box sx={{
+                padding: '0.25rem'}}>
+                <ActionButton 
+                  icon={<ContentCopy />}
+                  label='Copy'
+                  func={() => {
+                    console.log('msg: ', msg);
+                    navigator.clipboard.writeText(msg);
+                    handleClose();
+                  }}
+                ></ActionButton>
+                <ActionButton 
+                  icon={<Reply />}
+                  label='Reply'
+                  func={() => {
+                    handleClose();
+                  }}
+                ></ActionButton>
+                <ActionButton 
+                  icon={<Reply sx={{transform: 'scaleX(-1)'}} />}
+                  label='Forward'
+                  func={() => {
+                    handleClose();
+                  }}
+                ></ActionButton>
+              </Box>
+          </Popover>
         </div>
       ))}  
     <div ref={chatEndRef} mt='1rem'></div>
+  </Box>;
+}
+
+const ActionButton = ({icon, label, func}) => {
+  return <Box onClick={func} display='flex' gap='1rem' p='0.4rem'>
+    {icon}
+    <Typography >{label}</Typography>
   </Box>;
 }
 

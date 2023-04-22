@@ -119,36 +119,36 @@ const Navbar = () => {
               }}
               sx={{mt: '1.5rem', ml: '-1.5rem', maxWidth: true}}
             >
-              {userList.map((result, index) => (
-                <Box onClick={() => {
-                  navigate(`/profile/${result._id}`);
-                  navigate(0);
-                }} key={index} m='0.5rem 0'>
-                  <FlexBetween m='0.75rem 0' p='0 1rem' gap='3.5rem'>
-                    <FlexBetween gap="1rem" sx={{
-                      "&:hover": {
-                        color: theme.palette.primary.light,
-                      },
-                    }}>
-                      <UserImage image={result.picturePath} size="40px" />
-                      <Box>
-                        <Typography
-                          color={main}
-                          variant="h5"
-                          fontWeight="500"
-                        >
-                          {result.fullName}
-                        </Typography>
-                        <Typography color={medium} fontSize="0.75rem">
-                          {result.location}
-                        </Typography>
-                      </Box>
+                {userList.map((result, index) => (
+                  <Box onClick={() => {
+                    navigate(`/profile/${result._id}`);
+                    navigate(0);
+                  }} key={index} m='0.5rem 0'>
+                    <FlexBetween m='0.75rem 0' p='0 1rem' gap='3.5rem'>
+                      <FlexBetween gap="1rem" sx={{
+                        "&:hover": {
+                          color: theme.palette.primary.light,
+                        },
+                      }}>
+                        <UserImage image={result.picturePath} size="40px" />
+                        <Box>
+                          <Typography
+                            color={main}
+                            variant="h5"
+                            fontWeight="500"
+                          >
+                            {result.fullName}
+                          </Typography>
+                          <Typography color={medium} fontSize="0.75rem">
+                            {result.location}
+                          </Typography>
+                        </Box>
+                      </FlexBetween>
+                      <MovingOutlined />
                     </FlexBetween>
-                    <MovingOutlined />
-                  </FlexBetween>
-                </Box>
-              ))}
-          </Popover>
+                  </Box>
+                ))}
+            </Popover>
 
           </FlexBetween>
         )}
