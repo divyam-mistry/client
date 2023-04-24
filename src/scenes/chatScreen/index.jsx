@@ -11,9 +11,11 @@ import {
   Typography,
   Modal,
   Divider,
-  Popover
+  Fade,
+  Paper,
+  Popper
 } from "@mui/material";
-import { Search, ArrowBackIos, MoreVert, Forum, ImageOutlined, SendOutlined, EmojiEmotionsOutlined, ContentCopy, Reply} from "@mui/icons-material";
+import { Search, MoreVert, Forum, ImageOutlined, SendOutlined, EmojiEmotionsOutlined, ContentCopy, Reply, Close, KeyboardBackspace} from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { setFriends } from "state";
@@ -72,28 +74,28 @@ const ChatScreen = () => {
     <Box
       width="100%"
       height="100%"
-      p="2rem"
+      p="1rem"
       gap="0.5rem"
       backgroundColor={theme.palette.background.alt}
       overflow='clip'
     >
       <Box
-        p="1rem"
+        pl="1rem"
         height="100%"
         backgroundColor={theme.palette.background.default}
         borderRadius="0.75rem"
         display={isNonMobileScreens ? "flex" : "block"}
         justifyContent="space-between"
       >
-        <Box flexBasis="25%">
-          <Button
-            startIcon={<ArrowBackIos />}
-            onClick={() => {
-              navigate("/home");
-            }}
-          >
-            <Typography variant="h5">Back to Home</Typography>
-          </Button>
+        <Box flexBasis="26%" p='1rem 0 0 1rem'>
+          <Box display='flex' gap='1rem' alignItems='center'>
+            <IconButton fontSize='large' onClick={() => {
+                navigate("/home");
+              }}>
+              <KeyboardBackspace></KeyboardBackspace>
+            </IconButton>
+            <Typography variant='h4'>Chats</Typography>
+          </Box>
           <FriendsPanelLeft
             friends={user.friends}
             activeFriend={activeFriend}
@@ -103,7 +105,8 @@ const ChatScreen = () => {
         <Box
           flexBasis="72%"
           sx={{
-            borderRadius: "0.75rem",
+            borderRadius: "0rem 0.75rem 0.75rem 0rem",
+            border: `3px solid ${theme.palette.background.default}`,
             backgroundColor: theme.palette.background.alt,
             display: "flex",
             flexDirection: "column",
@@ -228,22 +231,21 @@ const ChatArea = ({ currentUser, messages }) => {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [msg, setMsg] = useState('');
-  const open = Boolean(anchorEl);
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [open, setOpen] = useState(false);
 
   function handleContextMenu(event, msg) {
     event.preventDefault();
     setMsg(msg);
+    setOpen((prev) => !prev);
     setAnchorEl(event.target);
   }
 
   useEffect(() => {
     chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
   return <Box className='chatArea' sx={{
-    height:'470px',
+    height:'525px',
     overflowX: 'hidden',
     overflowY: 'scroll',
     padding: '0.5rem 0',
@@ -284,46 +286,47 @@ const ChatArea = ({ currentUser, messages }) => {
               {moment().format('hh:mm')}
             </Typography>
           </div>
-          <Popover
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              sx={{mt: '1.5rem', ml: '-1.5rem', maxWidth: true, boxShadow: 'none'}}>
-              <Box sx={{
-                padding: '0.25rem'}}>
-                <ActionButton 
-                  icon={<ContentCopy />}
-                  label='Copy'
-                  func={() => {
-                    console.log('msg: ', msg);
-                    navigator.clipboard.writeText(msg);
-                    handleClose();
-                  }}
-                ></ActionButton>
-                <ActionButton 
-                  icon={<Reply />}
-                  label='Reply'
-                  func={() => {
-                    handleClose();
-                  }}
-                ></ActionButton>
-                <ActionButton 
-                  icon={<Reply sx={{transform: 'scaleX(-1)'}} />}
-                  label='Forward'
-                  func={() => {
-                    handleClose();
-                  }}
-                ></ActionButton>
-              </Box>
-          </Popover>
+          <Popper open={open} anchorEl={anchorEl} placement='top-start' transition>
+            {({ TransitionProps }) => (
+              <Fade {...TransitionProps} timeout={350}>
+                <Paper>
+                  <Box sx={{
+                    padding: '0.25rem'}}>
+                    <ActionButton 
+                      icon={<ContentCopy />}
+                      label='Copy'
+                      func={() => {
+                        console.log('msg: ', msg);
+                        navigator.clipboard.writeText(msg);
+                        setOpen(false);
+                      }}
+                    ></ActionButton>
+                    <ActionButton 
+                      icon={<Reply />}
+                      label='Reply'
+                      func={() => {
+                        setOpen(false);
+                      }}
+                    ></ActionButton>
+                    <ActionButton 
+                      icon={<Reply sx={{transform: 'scaleX(-1)'}} />}
+                      label='Forward'
+                      func={() => {
+                        setOpen(false);
+                      }}
+                    ></ActionButton>
+                    <ActionButton 
+                      icon={<Close />}
+                      label='Close'
+                      func={() => {
+                        setOpen(false);
+                      }}
+                    ></ActionButton>
+                  </Box>
+                </Paper>
+              </Fade>
+            )}
+          </Popper>
         </div>
       ))}  
     <div ref={chatEndRef} mt='1rem'></div>
@@ -331,7 +334,14 @@ const ChatArea = ({ currentUser, messages }) => {
 }
 
 const ActionButton = ({icon, label, func}) => {
-  return <Box onClick={func} display='flex' gap='1rem' p='0.4rem'>
+  const theme = useTheme();
+  return <Box onClick={func} display='flex' gap='1rem' p='0.4rem' 
+    borderRadius='2px'
+    sx={{
+    '&:hover': {
+      backgroundColor: theme.palette.neutral.light
+    }
+  }}>
     {icon}
     <Typography >{label}</Typography>
   </Box>;
