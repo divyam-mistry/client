@@ -120,12 +120,12 @@ export const themeSettings = (mode) => {
         },
         // pxToRem: () => { return 24; }
       },
-      // transitions: {
-      //   duration: {
-      //     shorter: ''
-      //   },
-      //   create: () => {},
-
-      // }
+      components: {
+        MuiButtonBase: {
+          defaultProps: {
+            disableRipple: true,
+          },
+        },
+      },
     };
   };

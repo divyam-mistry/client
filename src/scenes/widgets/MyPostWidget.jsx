@@ -18,8 +18,10 @@ import {
   IconButton,
   useMediaQuery,
   Chip,
+  Alert,
   Paper,
-  Skeleton
+  Skeleton,
+  Snackbar
 } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
 import Dropzone from "react-dropzone";
@@ -66,6 +68,15 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
     p: 4,
     borderRadius: '1rem'
   };
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
   const [chipData, setChipData] = useState([]);
   const [generate, setGenerate] = useState(false);
   const [captionData, setCaptionData] = useState([]);
@@ -116,6 +127,11 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
     });
     const resp = await response.json();
     console.log(resp);
+    if(resp.error){
+      setSnackbarMessage(resp.error);
+      handleClose();
+      setOpenSnackbar(true);
+    }
     setCaptionData(resp.captions);
   };
 
@@ -309,6 +325,14 @@ const MyPostWidget = ({ picturePath, updatePosts }) => {
           </Box>} 
         </Box>
       </Modal>
+
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ 
+            width: '100%', fontSize:'16px'
+          }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
 
     </Box>
   );
