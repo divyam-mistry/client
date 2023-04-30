@@ -16,7 +16,7 @@ import {
   Message,
   DarkMode,
   LightMode,
-  Notifications,
+  Explore,
   Help,
   Menu,
   Close,
@@ -164,8 +164,8 @@ const Navbar = () => {
             <IconButton onClick={() => navigate('/chat')}>
               <Message sx={{fontSize: '25px'}}/>
             </IconButton>
-            <IconButton>
-              <Notifications sx={{fontSize: '25px'}}/>
+            <IconButton onClick={() => navigate(`/explore`)}>
+              <Explore sx={{fontSize: '25px'}}/>
             </IconButton>
             <IconButton>
               <Help sx={{fontSize: '25px'}}/>
@@ -240,8 +240,8 @@ const Navbar = () => {
             <IconButton>
               <Message sx={{fontSize: '25px'}}/>
             </IconButton>
-            <IconButton>
-              <Notifications sx={{fontSize: '25px'}}/>
+            <IconButton onClick={() => navigate(`/explore`)}>
+              <Explore sx={{fontSize: '25px'}}/>
             </IconButton>
             <IconButton>
               <Help sx={{fontSize: '25px'}}/>

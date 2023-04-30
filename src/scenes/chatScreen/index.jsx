@@ -13,7 +13,8 @@ import {
   Divider,
   Fade,
   Paper,
-  Popper
+  Popper,
+  ClickAwayListener
 } from "@mui/material";
 import { Search, MoreVert, Forum, ImageOutlined, SendOutlined, EmojiEmotionsOutlined, ContentCopy, Reply, Close, KeyboardBackspace} from "@mui/icons-material";
 import { useState, useEffect } from "react";
@@ -76,7 +77,7 @@ const ChatScreen = () => {
       height="100%"
       p="1rem"
       gap="0.5rem"
-      backgroundColor={theme.palette.background.alt}
+      backgroundColor='grey'
       overflow='clip'
     >
       <Box
@@ -195,8 +196,46 @@ const FriendsPanelLeft = ({ friends, activeFriend, setActiveFriend }) => {
 
 const ChatHeader = ({ friend }) => {
   const { palette } = useTheme();
-  const dark = palette.neutral.dark;
+  const medium = palette.neutral.medium;
   const main = palette.neutral.main;
+
+  const [word, setWord] = useState('');
+  const [wordDefinition, setWordDefinition] = useState({});
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setWord('');
+    setOpen(false);
+  };
+
+  const getWordDefinitions = async (word) => {
+    if(!word) return;
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,{
+      method: 'GET',
+    });
+    const data = await response.json();
+    if(data.title) return data;
+    console.log(data);
+    return data[0];
+  };
+
+  const onWordChange = (event) => {
+    setWord(event.target.value);
+  };
+
+  // style for modal
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    // border: `2px solid #000`,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: '2rem',
+    borderRadius: '1rem'
+  };
+
   return (
     <Box
       p="1rem 2rem"
@@ -204,6 +243,7 @@ const ChatHeader = ({ friend }) => {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: 'center'
       }}
     >
       <FlexBetween gap="1rem">
@@ -217,9 +257,71 @@ const ChatHeader = ({ friend }) => {
           </Typography>
         </Box>
       </FlexBetween>
-      <Typography color={main} fontSize="0.75rem">
-        <MoreVert />
-      </Typography>
+      <FlexBetween>
+        <FlexBetween
+          backgroundColor={palette.background.alt}
+          borderRadius="0.75rem"
+          border='1px solid grey'
+          gap="3rem"
+          padding="0.2rem 1.5rem"
+        >
+          <InputBase placeholder="Get Word Definitions..." value={word} onChange={onWordChange} />
+          <IconButton onClick={() => getWordDefinitions(word).then((result) => {
+            setWordDefinition(result);
+            handleOpen();
+          }).catch((error) => {
+            console.log('error', error);
+            setWordDefinition(error);
+            handleOpen();
+          })} disabled={!word}>
+            <Search />
+          </IconButton>
+        </FlexBetween>
+      </FlexBetween>
+      {/* MODAL FOR WORD DEFINITION */}
+      <Modal open={open} onClose={handleClose} >
+        <Box sx={style}>
+          <Box onClick={handleClose}>
+            <Close fontSize="large" sx={{
+              top: '1rem', right: '1rem', position: 'absolute', 
+              color: palette.neutral.dark
+            }}></Close>
+          </Box>
+          { wordDefinition.word ? <Box mt='1rem'>
+          <Typography variant='h4' mb='1rem' sx={{
+            textDecoration: 'underline'
+          }}>{wordDefinition.word} </Typography> 
+          <Box display='flex'>
+          {
+            wordDefinition.phonetics.map((pi, index) => {
+              return <Typography key={index}>
+                {pi.text}
+              </Typography>;
+            })
+          }
+          </Box>
+          {
+            wordDefinition.meanings.map((word, index) => {
+              return <Box mb='0.5rem' key={index}>
+                <Typography variant='h5' fontStyle='italic'>{word.partOfSpeech}</Typography>
+                <Typography variant='h5' color={medium} ml='1.5rem'>
+                  {word.definitions[0].definition}
+                </Typography>
+                { word.definitions[0].example && <Typography variant='h5' color={medium} ml='1.5rem'>
+                  <i>Example: </i> "{word.definitions[0].example}"
+                </Typography>
+                }
+              </Box>;
+            })
+          }
+          </Box> : <Box mt='1rem'>
+          <Typography variant='h4'>" {wordDefinition.title} "</Typography>
+          <Typography variant='h5' color={medium} mt='1rem'>
+            {wordDefinition.message + ' ' + wordDefinition.resolution}
+          </Typography>
+          </Box>}
+        </Box>
+      </Modal>
     </Box>
   );
 };
@@ -286,47 +388,49 @@ const ChatArea = ({ currentUser, messages }) => {
               {moment().format('hh:mm')}
             </Typography>
           </div>
-          <Popper open={open} anchorEl={anchorEl} placement='top-start' transition>
-            {({ TransitionProps }) => (
-              <Fade {...TransitionProps} timeout={350}>
-                <Paper>
-                  <Box sx={{
-                    padding: '0.25rem'}}>
-                    <ActionButton 
-                      icon={<ContentCopy />}
-                      label='Copy'
-                      func={() => {
-                        console.log('msg: ', msg);
-                        navigator.clipboard.writeText(msg);
-                        setOpen(false);
-                      }}
-                    ></ActionButton>
-                    <ActionButton 
-                      icon={<Reply />}
-                      label='Reply'
-                      func={() => {
-                        setOpen(false);
-                      }}
-                    ></ActionButton>
-                    <ActionButton 
-                      icon={<Reply sx={{transform: 'scaleX(-1)'}} />}
-                      label='Forward'
-                      func={() => {
-                        setOpen(false);
-                      }}
-                    ></ActionButton>
-                    <ActionButton 
-                      icon={<Close />}
-                      label='Close'
-                      func={() => {
-                        setOpen(false);
-                      }}
-                    ></ActionButton>
-                  </Box>
-                </Paper>
-              </Fade>
-            )}
-          </Popper>
+          <ClickAwayListener onClickAway={() => {setOpen(false)}}>
+            <Popper open={open} anchorEl={anchorEl} placement='top-start' transition>
+              {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                  <Paper>
+                    <Box sx={{
+                      padding: '0.25rem'}}>
+                      <ActionButton 
+                        icon={<ContentCopy />}
+                        label='Copy'
+                        func={() => {
+                          console.log('msg: ', msg);
+                          navigator.clipboard.writeText(msg);
+                          setOpen(false);
+                        }}
+                      ></ActionButton>
+                      <ActionButton 
+                        icon={<Reply />}
+                        label='Reply'
+                        func={() => {
+                          setOpen(false);
+                        }}
+                      ></ActionButton>
+                      <ActionButton 
+                        icon={<Reply sx={{transform: 'scaleX(-1)'}} />}
+                        label='Forward'
+                        func={() => {
+                          setOpen(false);
+                        }}
+                      ></ActionButton>
+                      <ActionButton 
+                        icon={<Close />}
+                        label='Close'
+                        func={() => {
+                          setOpen(false);
+                        }}
+                      ></ActionButton>
+                    </Box>
+                  </Paper>
+                </Fade>
+              )}
+            </Popper>
+          </ClickAwayListener>
         </div>
       ))}  
     <div ref={chatEndRef} mt='1rem'></div>
