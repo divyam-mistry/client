@@ -19,18 +19,18 @@ import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 
 const registerSchema = yup.object().shape({
-    firstName: yup.string().required("required"),
-    lastName: yup.string().required("required"),
-    email: yup.string().email("invalid email").required("required"),
-    password: yup.string().min(6, "password should be greater than 6 characters").required("required"),
-    location: yup.string().required("required"),
-    occupation: yup.string().required("required"),
-    picture: yup.string().required("required"),
+    firstName: yup.string().required("Required"),
+    lastName: yup.string().required("Required"),
+    email: yup.string().email("Invalid email").required("Required"),
+    password: yup.string().min(6, "Password should be greater than 6 characters").required("Required"),
+    location: yup.string().required("Required"),
+    occupation: yup.string().required("Required"),
+    picture: yup.string().required("Required"),
 });
 
 const loginSchema = yup.object().shape({
-    email: yup.string().email("invalid email").required("required"),
-    password: yup.string().min(6, "password should be greater than 6 characters").required("required"),
+    email: yup.string().email("Invalid email").required("Required"),
+    password: yup.string().min(6, "Password should be greater than 6 characters").required("Required"),
 });
 
 const initialValuesRegister = {
