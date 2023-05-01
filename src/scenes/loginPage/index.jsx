@@ -30,7 +30,7 @@ const LoginPage = () => {
         </Typography>
       </Box>
       <Box
-        width={ isNonMobileScreens ? '50%' : '90%'}
+        width={ isNonMobileScreens ? '70%' : '90%'}
         backgroundColor={theme.palette.background.alt}
         p='2rem'
         m='2rem auto'
