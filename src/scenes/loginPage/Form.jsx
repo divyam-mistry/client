@@ -121,13 +121,13 @@ const Form = () => {
         if (isRegister) await register(values, onSubmitProps);
     };
 
-    return <FlexBetween>
+    return <Box display={isNonMobile ? 'flex' : 'block'} alignItems='center'>
       {isLogin && <img
-          width='40%'
-          height='40%'
+          width={isNonMobile ? '40%' : '100%'}
+          height={isNonMobile ? '40%' : '100%'}
           src='/assets/login.png'
       ></img>}
-      <Box width={isLogin ? '60%' : '100%'} p='0 1rem'>
+      <Box width={isLogin ? (isNonMobile ? '60%' : '100%') : '100%'} p='0 1rem'>
         <Formik
           onSubmit={handleFormSubmit}
           initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
@@ -305,7 +305,7 @@ const Form = () => {
           )}
         </Formik>
       </Box>
-    </FlexBetween>;
+    </Box>;
 }
 
 export default Form;
