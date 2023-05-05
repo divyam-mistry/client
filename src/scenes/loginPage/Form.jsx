@@ -7,7 +7,9 @@ import {
   Typography,
   useTheme,
   Snackbar,
-  Alert
+  Alert,
+  InputAdornment,
+  IconButton
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Formik } from "formik";
@@ -17,6 +19,8 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const registerSchema = yup.object().shape({
     firstName: yup.string().required("Required"),
@@ -58,6 +62,9 @@ const Form = () => {
     const isLogin = (pageType === "login");
     const isRegister = (pageType === "register");
   
+    const [showPassword, setShowPassword] = useState(false);
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
     const handleClose = (event, reason) => {
       if (reason === 'clickaway') {
         return;
@@ -246,7 +253,7 @@ const Form = () => {
                 />
                 <TextField
                   label="Password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   value={values.password}
@@ -254,6 +261,19 @@ const Form = () => {
                   error={Boolean(touched.password) && Boolean(errors.password)}
                   helperText={touched.password && errors.password}
                   sx={{ gridColumn: "span 4" }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          edge="end" mr='0.5rem'
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
                 />
               </Box>
     

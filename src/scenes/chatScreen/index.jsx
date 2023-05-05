@@ -363,31 +363,34 @@ const ChatArea = ({ currentUser, messages }) => {
               message.sender === currentUser._id ? 'flex-end' : 'flex-start',
           }}
         >
-          <div
-            style={{
-              backgroundColor:
-                message.sender === currentUser._id ? '#008080' : '#2196F3',
-              padding: '10px',
-              borderRadius: '10px',
-              margin: '5px 10px',
-              maxWidth: '60%',
-              wordWrap: 'break-word'
-            }}
-            onContextMenu={(event) => {
-              handleContextMenu(event, message.text);
-            }}
-          >
-            <Typography>
-              {message.text}
-            </Typography>
-            <Typography fontSize='12px' sx={{
-              // alignItems: 'end',
-              display: 'flex',
-              justifyContent: 'flex-end',
-            }}>
-              {moment().format('hh:mm')}
-            </Typography>
-          </div>
+          <Box>
+            <div
+              style={{
+                backgroundColor:
+                  message.sender === currentUser._id ? '#008080' : '#2196F3',
+                padding: '10px',
+                borderRadius: '10px',
+                margin: '5px 10px',
+                maxWidth: '60%',
+                wordWrap: 'break-word'
+              }}
+              onContextMenu={(event) => {
+                handleContextMenu(event, message.text);
+              }}
+            >
+              <Typography>
+                {message.text}
+              </Typography>
+              <Typography fontSize='12px' sx={{
+                // alignItems: 'end',
+                display: 'flex',
+                justifyContent: 'flex-end',
+              }}>
+                {moment().format('hh:mm')}
+              </Typography>
+            </div>
+            {/* add here */}
+          </Box>
           <ClickAwayListener onClickAway={() => {setOpen(false)}}>
             <Popper open={open} anchorEl={anchorEl} placement='top-start' transition>
               {({ TransitionProps }) => (
