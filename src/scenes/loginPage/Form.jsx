@@ -269,7 +269,11 @@ const Form = () => {
                           onClick={handleClickShowPassword}
                           edge="end" mr='0.5rem'
                         >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                          {showPassword ? <VisibilityOff sx={{
+                            color: 'grey'
+                          }}/> : <Visibility sx={{
+                            color: 'grey'
+                          }}/>}
                         </IconButton>
                       </InputAdornment>
                     )
