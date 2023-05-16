@@ -267,13 +267,13 @@ const Form = () => {
                         <IconButton
                           aria-label="toggle password visibility"
                           onClick={handleClickShowPassword}
-                          edge="end" mr='0.5rem'
+                          edge="end"
                         >
                           {showPassword ? <VisibilityOff sx={{
-                            color: 'grey'
-                          }}/> : <Visibility sx={{
-                            color: 'grey'
-                          }}/>}
+                              color: 'grey'
+                            }}/> : <Visibility sx={{
+                              color: 'grey'
+                            }}/>}
                         </IconButton>
                       </InputAdornment>
                     )

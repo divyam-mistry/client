@@ -15,6 +15,8 @@ import {
   Paper,
   Popper,
   ClickAwayListener,
+  Card,
+  Chip,
 } from "@mui/material";
 import {
   Search,
@@ -134,7 +136,7 @@ const ChatScreen = () => {
             >
               <KeyboardBackspace></KeyboardBackspace>
             </IconButton>
-            <Typography variant="h4">Chats</Typography>
+            <Typography variant="h3">Chats</Typography>
           </Box>
           <FriendsPanelLeft
             friends={user.friends}
@@ -182,7 +184,7 @@ const FriendsPanelLeft = ({ friends, activeFriend, setActiveFriend }) => {
         borderRadius="5px"
         gap="3rem"
         padding="0.2rem 1.5rem"
-        mt="1rem"
+        mt="1.5rem"
       >
         <InputBase placeholder="Search..." />
         <IconButton>
@@ -426,10 +428,14 @@ const ChatArea = ({ currentUser, messages }) => {
         overflowX: "hidden",
         overflowY: "scroll",
         padding: "0.5rem 0",
-        backgroundColor: theme.palette.neutral.light,
+        backgroundImage: "url('/assets/chatbg.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center', 
       }}
     >
-      <Divider>Today</Divider>
+      <Divider>
+        <Chip label="Today" />
+      </Divider>
       {messages.map((message, index) => (
         <div
           key={index}
