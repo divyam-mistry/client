@@ -22,6 +22,7 @@ import {
   Close,
   ExitToApp,
   MovingOutlined,
+  NotificationsRounded,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
@@ -168,7 +169,7 @@ const Navbar = () => {
               <Explore sx={{fontSize: '25px'}}/>
             </IconButton>
             <IconButton>
-              <Help sx={{fontSize: '25px'}}/>
+              <NotificationsRounded sx={{fontSize: '25px'}}/>
             </IconButton>
             <FormControl variant="standard" value={fullName}>
               <Select
